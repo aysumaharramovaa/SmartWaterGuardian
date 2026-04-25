@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Water Guardian | Control Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+        .water-wave { background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); }
+        .status-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.5; } 70% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
+                Smart Water Guardian
+            </h1>
+            <p class="text-slate-400 text-sm">SmartCounter Ecosystem • Real-time Monitoring</p>
+        </div>
+        <div class="flex gap-3">
+            <div class="glass-card px-4 py-2 flex items-center gap-2">
+                <div class="w-3 h-3 bg-green-500 rounded-full status-pulse"></div>
+                <span class="text-xs font-mono">SYSTEM ONLINE</span>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-lg font-bold transition-all">
+                Cihaza Qoşul
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        
+        <div class="glass-card p-6 flex flex-col items-center">
+            <h3 class="text-slate-400 mb-4 text-sm uppercase">Su Səviyyəsi</h3>
+            <div class="relative w-32 h-32 border-4 border-slate-700 rounded-full overflow-hidden">
+                <div class="water-wave absolute bottom-0 w-full transition-all duration-1000" style="height: 65%;"></div>
+                <div class="absolute inset-0 flex items-center justify-center font-bold text-2xl">65%</div>
+            </div>
+            <p class="mt-4 text-green-400 text-sm italic">Stabil</p>
+        </div>
+
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start">
+                <h3 class="text-slate-400 text-sm uppercase">Nəmişlik & Sızma</h3>
+                <i class="fas fa-tint text-blue-400 text-xl"></i>
+            </div>
+            <div class="mt-4">
+                <span class="text-4xl font-bold">22%</span>
+                <div class="w-full bg-slate-700 h-2 rounded-full mt-4">
+                    <div class="bg-blue-500 h-2 rounded-full shadow-[0_0_10px_#3b82f6]" style="width: 22%"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-4">Sızma aşkar edilmədi</p>
+            </div>
+        </div>
+
+        <div class="glass-card p-6 border-l-4 border-yellow-500">
+            <div class="flex justify-between items-start">
+                <h3 class="text-slate-400 text-sm uppercase">Qaz Sensoru</h3>
+                <i class="fas fa-wind text-yellow-500 text-xl"></i>
+            </div>
+            <div class="mt-4 text-center">
+                <span class="text-2xl font-bold text-yellow-100 italic font-mono uppercase tracking-widest">Normal</span>
+                <p class="text-[10px] text-slate-500 mt-6">CH4 & CO Monitorinqi</p>
+            </div>
+        </div>
+
+        <div class="glass-card p-6">
+            <div class="flex justify-between items-start">
+                <h3 class="text-slate-400 text-sm uppercase">Sistem Rejimi</h3>
+                <i class="fas fa-moon text-indigo-400 text-xl"></i>
+            </div>
+            <div class="mt-6 flex items-center gap-4">
+                <div class="bg-indigo-900/50 p-3 rounded-lg border border-indigo-500">
+                    <span class="text-xs block text-indigo-300 uppercase">Gecə Rejimi</span>
+                    <span class="font-bold">AKTİV</span>
+                </div>
+                <i class="fas fa-shield-alt text-2xl text-slate-600"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass-card p-6">
+            <h3 class="text-lg font-semibold mb-6">Su İstehlakı Analizi (Həftəlik)</h3>
+            <canvas id="consumptionChart" height="150"></canvas>
+        </div>
+
+        <div class="glass-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Son Bildirişlər</h3>
+            <div class="space-y-4">
+                <div class="flex gap-3 border-l-2 border-blue-500 pl-3">
+                    <div class="text-xs text-slate-500">03:12</div>
+                    <div class="text-sm italic text-slate-300">Gecə rejiminə keçid edildi.</div>
+                </div>
+                <div class="flex gap-3 border-l-2 border-red-500 pl-3 bg-red-500/10 py-2">
+                    <div class="text-xs text-slate-500">Dünən</div>
+                    <div class="text-sm font-bold text-red-400">Su səviyyəsi kritik həddə!</div>
+                </div>
+                <div class="flex gap-3 border-l-2 border-green-500 pl-3">
+                    <div class="text-xs text-slate-500">24 Apr</div>
+                    <div class="text-sm text-slate-300">Aylıq hesabat hazırlandı.</div>
+                </div>
+            </div>
+            <button class="w-full mt-10 py-3 border border-slate-600 rounded-lg hover:bg-slate-700 transition-all text-sm uppercase tracking-tighter">
+                Bütün Tarixçəyə Bax
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('consumptionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['B.E', 'Ç.A', 'Ç', 'C.A', 'C', 'Ş', 'B'],
+                datasets: [{
+                    label: 'Litr',
+                    data: [120, 150, 140, 190, 220, 310, 280],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
