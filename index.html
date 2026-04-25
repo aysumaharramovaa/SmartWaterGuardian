@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartCounter | Pro Dashboard</title>
+    <title>SmartCounter | Responsive Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -15,8 +15,7 @@
             --text-color: #f8fafc;
             --card-bg: rgba(30, 41, 59, 0.4);
             --border-color: rgba(255, 255, 255, 0.05);
-            --sidebar-bg: rgba(2, 6, 23, 0.8);
-            --inner-card: rgba(15, 23, 42, 0.6);
+            --sidebar-bg: rgba(2, 6, 23, 0.95);
         }
 
         .light-mode {
@@ -24,16 +23,14 @@
             --text-color: #0f172a;
             --card-bg: rgba(255, 255, 255, 0.9);
             --border-color: rgba(0, 0, 0, 0.08);
-            --sidebar-bg: rgba(255, 255, 255, 0.95);
-            --inner-card: rgba(241, 245, 249, 1);
+            --sidebar-bg: rgba(255, 255, 255, 0.98);
         }
 
         body { 
             background-color: var(--bg-color); 
             color: var(--text-color); 
             font-family: "Plus Jakarta Sans", sans-serif; 
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-x: hidden;
+            transition: all 0.5s ease;
         }
 
         .glass-card { 
@@ -41,83 +38,81 @@
             backdrop-filter: blur(12px); 
             border: 1px solid var(--border-color); 
             border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        aside { background: var(--sidebar-bg) !important; border-color: var(--border-color) !important; }
-        header { border-color: var(--border-color) !important; background: var(--sidebar-bg); }
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+            z-index: 100;
+        }
 
-        .sidebar-item { color: #64748b; transition: all 0.3s; }
-        .sidebar-item:hover { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        @media (max-width: 1024px) {
+            #sidebar { transform: translateX(-100%); }
+            #sidebar.open { transform: translateX(0); }
+            main { margin-left: 0 !important; }
+        }
+
         .sidebar-active { background: rgba(59, 130, 246, 0.15); border-right: 4px solid #3b82f6; color: #3b82f6; }
-        
         .water-fill { transition: height 1.5s ease-in-out; background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%); }
+        
         .section-content { display: none; }
         .section-content.active { display: block; animation: fadeIn 0.4s ease; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="flex min-h-screen">
 
-    <aside class="w-64 border-r flex flex-col fixed h-full backdrop-blur-xl z-50">
+    <div id="overlay" onclick="toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[90] lg:hidden"></div>
+
+    <aside id="sidebar" class="w-64 border-r flex flex-col fixed h-full bg-[var(--sidebar-bg)] backdrop-blur-xl">
         <div class="p-6">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="bg-blue-600 p-2 rounded-lg shadow-lg shadow-blue-500/30">
-                    <i class="fas fa-droplet text-white"></i>
+            <div class="flex items-center justify-between mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-2 rounded-lg shadow-lg">
+                        <i class="fas fa-droplet text-white"></i>
+                    </div>
+                    <span class="font-bold text-lg tracking-tight italic">SmartCounter</span>
                 </div>
-                <span class="font-bold text-lg tracking-tight italic">SmartCounter</span>
+                <button onclick="toggleMenu()" class="lg:hidden text-2xl">&times;</button>
             </div>
 
             <nav class="space-y-2">
-                <a href="#" onclick="showSection('dashboard', this)" class="sidebar-item sidebar-active flex items-center gap-4 px-4 py-3 rounded-lg">
+                <a href="#" onclick="showSection('dashboard', this)" class="sidebar-item sidebar-active flex items-center gap-4 px-4 py-3 rounded-lg transition-all">
                     <i class="fas fa-chart-pie w-5"></i> Dashboard
                 </a>
-                <a href="#" onclick="showSection('analytics', this)" class="sidebar-item flex items-center gap-4 px-4 py-3 rounded-lg">
+                <a href="#" onclick="showSection('analytics', this)" class="sidebar-item flex items-center gap-4 px-4 py-3 rounded-lg opacity-70">
                     <i class="fas fa-microchip w-5"></i> Sensorlar
                 </a>
-                <a href="#" onclick="showSection('reports', this)" class="sidebar-item flex items-center gap-4 px-4 py-3 rounded-lg">
+                <a href="#" onclick="showSection('reports', this)" class="sidebar-item flex items-center gap-4 px-4 py-3 rounded-lg opacity-70">
                     <i class="fas fa-file-waveform w-5"></i> Hesabatlar
-                </a>
-                <a href="#" onclick="showSection('settings', this)" class="sidebar-item flex items-center gap-4 px-4 py-3 rounded-lg opacity-50">
-                    <i class="fas fa-cog w-5"></i> Ayarlar
                 </a>
             </nav>
         </div>
-        <div class="mt-auto p-6">
-            <div class="glass-card p-4 rounded-xl text-center">
-                <p class="text-[10px] opacity-50 italic mb-1">See. Save. Control.</p>
-                <div class="flex items-center justify-center gap-2">
-                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="text-[9px] font-bold uppercase tracking-widest">Sistem Online</span>
-                </div>
-            </div>
+        <div class="mt-auto p-6 text-center">
+            <p class="text-[10px] opacity-40 italic">See. Save. Control.</p>
         </div>
     </aside>
 
-    <main class="flex-1 ml-64">
-        <header class="h-20 border-b flex items-center justify-between px-8 sticky top-0 z-40 backdrop-blur-md">
-            <h2 id="section-title" class="text-xl font-semibold">Dashboard</h2>
+    <main class="flex-1 ml-64 min-w-0">
+        <header class="h-20 border-b flex items-center justify-between px-4 md:px-8 sticky top-0 z-40 backdrop-blur-md bg-[var(--sidebar-bg)]">
             <div class="flex items-center gap-4">
-                <div class="text-right hidden md:block">
-                    <p class="text-sm font-medium">Admin Panel</p>
-                    <p class="text-[10px] text-blue-500 font-bold uppercase tracking-tighter">Premium Access</p>
-                </div>
-                <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold">A</div>
+                <button onclick="toggleMenu()" class="lg:hidden p-2 text-xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 id="section-title" class="text-lg md:xl font-semibold">Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">A</div>
             </div>
         </header>
 
-        <div class="p-8">
-            
+        <div class="p-4 md:p-8">
             <section id="dashboard" class="section-content active">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="glass-card p-6 border-b-4 border-indigo-500 cursor-pointer transition-transform hover:scale-[1.02] active:scale-95" id="mode-card">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
+                    <div class="glass-card p-6 border-b-4 border-indigo-500 cursor-pointer" id="mode-card">
                         <div class="flex justify-between items-start">
                             <div>
-                                <p class="opacity-60 text-sm">Sistem Rejimi</p>
-                                <h3 class="text-xl font-bold mt-1 italic" id="current-mode-text">Yüklənir...</h3>
+                                <p class="opacity-60 text-xs">Sistem Rejimi</p>
+                                <h3 class="text-lg font-bold mt-1 italic" id="current-mode-text">Yüklənir...</h3>
                             </div>
                             <div class="p-3 rounded-xl bg-indigo-500/10" id="mode-icon-bg">
                                 <i class="fas fa-moon text-indigo-500 text-xl" id="mode-icon"></i>
@@ -125,202 +120,125 @@
                         </div>
                     </div>
                     <div class="glass-card p-6 flex items-center justify-between">
-                        <div><p class="opacity-60 text-sm">Gündəlik Su</p><h3 class="text-3xl font-bold mt-1">24.5 L</h3></div>
+                        <div><p class="opacity-60 text-xs">Gündəlik Su</p><h3 class="text-2xl font-bold mt-1">24.5 L</h3></div>
                         <div class="p-3 rounded-xl bg-blue-500/10"><i class="fas fa-faucet-drip text-blue-500 text-xl"></i></div>
                     </div>
-                    <div class="glass-card p-6 flex items-center justify-between">
-                        <div><p class="opacity-60 text-sm">Sızma Analizi</p><h3 class="text-3xl font-bold mt-1 text-green-500">Təmiz</h3></div>
+                    <div class="glass-card p-6 flex items-center justify-between sm:col-span-2 lg:col-span-1">
+                        <div><p class="opacity-60 text-xs">Sızma Analizi</p><h3 class="text-2xl font-bold mt-1 text-green-500">Təmiz</h3></div>
                         <div class="p-3 rounded-xl bg-green-500/10"><i class="fas fa-shield-halved text-green-500 text-xl"></i></div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="glass-card p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-4 md:p-8 overflow-hidden">
                         <h4 class="text-lg font-semibold mb-6">Real-time Su Akışı</h4>
-                        <canvas id="flowChart" height="200"></canvas>
+                        <canvas id="flowChart" style="max-height: 250px;"></canvas>
                     </div>
-                    <div class="glass-card p-8 flex flex-col items-center justify-center text-center">
-                        <h4 class="text-lg font-semibold mb-6 self-start">Su Çəni Səviyyəsi</h4>
-                        <div class="w-48 h-48 border-8 border-slate-500/20 rounded-full relative overflow-hidden shadow-inner">
+                    <div class="glass-card p-8 flex flex-col items-center justify-center">
+                        <h4 class="text-lg font-semibold mb-6 self-start">Çən Səviyyəsi</h4>
+                        <div class="w-40 h-40 md:w-48 md:h-48 border-8 border-slate-500/20 rounded-full relative overflow-hidden">
                             <div id="waterLevel" class="water-fill absolute bottom-0 w-full" style="height: 75%"></div>
-                            <div class="absolute inset-0 flex items-center justify-center text-4xl font-black">75%</div>
+                            <div class="absolute inset-0 flex items-center justify-center text-3xl font-black">75%</div>
                         </div>
-                        <p class="mt-4 text-sm opacity-60">Təxmini qalan həcm: 375 L</p>
                     </div>
                 </div>
             </section>
 
             <section id="analytics" class="section-content">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="glass-card p-6 text-center">
-                        <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-gas-pump text-yellow-500"></i>
-                        </div>
-                        <h5 class="opacity-60 text-xs uppercase tracking-widest">Qaz Sensoru</h5>
-                        <p class="text-2xl font-bold mt-1">0.02 ppm</p>
-                        <span class="status-badge bg-green-500/20 text-green-500">Normal</span>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 text-center">
+                        <i class="fas fa-gas-pump text-yellow-500 mb-2"></i>
+                        <p class="text-[10px] uppercase opacity-50">Qaz</p>
+                        <p class="text-xl font-bold">0.02</p>
                     </div>
-                    <div class="glass-card p-6 text-center">
-                        <div class="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-sun text-orange-500"></i>
-                        </div>
-                        <h5 class="opacity-60 text-xs uppercase tracking-widest">İşıq Səviyyəsi</h5>
-                        <p class="text-2xl font-bold mt-1">12%</p>
-                        <span class="status-badge bg-indigo-500/20 text-indigo-500">Gecə</span>
+                    <div class="glass-card p-4 text-center">
+                        <i class="fas fa-sun text-orange-500 mb-2"></i>
+                        <p class="text-[10px] uppercase opacity-50">İşıq</p>
+                        <p class="text-xl font-bold">12%</p>
                     </div>
-                    <div class="glass-card p-6 text-center">
-                        <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-temperature-half text-blue-500"></i>
-                        </div>
-                        <h5 class="opacity-60 text-xs uppercase tracking-widest">Temperatur</h5>
-                        <p class="text-2xl font-bold mt-1">22°C</p>
-                        <span class="status-badge bg-blue-500/20 text-blue-500">Stabil</span>
+                    <div class="glass-card p-4 text-center">
+                        <i class="fas fa-temperature-half text-blue-500 mb-2"></i>
+                        <p class="text-[10px] uppercase opacity-50">Temp</p>
+                        <p class="text-xl font-bold">22°C</p>
                     </div>
-                    <div class="glass-card p-6 text-center">
-                        <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-bolt text-red-500"></i>
-                        </div>
-                        <h5 class="opacity-60 text-xs uppercase tracking-widest">Gərginlik</h5>
-                        <p class="text-2xl font-bold mt-1">220V</p>
-                        <span class="status-badge bg-red-500/20 text-red-500">Aktiv</span>
+                    <div class="glass-card p-4 text-center">
+                        <i class="fas fa-bolt text-red-500 mb-2"></i>
+                        <p class="text-[10px] uppercase opacity-50">Gərginlik</p>
+                        <p class="text-xl font-bold">220V</p>
                     </div>
                 </div>
-                
-                <div class="mt-8 glass-card p-8">
-                    <h4 class="text-lg font-semibold mb-4">Sensor Node Aktivliyi</h4>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead>
-                                <tr class="border-b border-slate-500/20 opacity-60">
-                                    <th class="pb-3 uppercase">Cihaz ID</th>
-                                    <th class="pb-3 uppercase">Status</th>
-                                    <th class="pb-3 uppercase">Son Cavab</th>
-                                    <th class="pb-3 uppercase">Enerji</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-500/10">
-                                <tr><td class="py-4">SC-001 (Mətbəx)</td><td><span class="text-green-500">● Aktiv</span></td><td>İndi</td><td>98%</td></tr>
-                                <tr><td class="py-4">SC-002 (Hamam)</td><td><span class="text-green-500">● Aktiv</span></td><td>2 dəq əvvəl</td><td>85%</td></tr>
-                                <tr><td class="py-4">SC-003 (Giriş)</td><td><span class="text-yellow-500">● Gözləmədə</span></td><td>15 dəq əvvəl</td><td>40%</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="mt-6 glass-card p-4 md:p-8 overflow-x-auto">
+                    <table class="w-full text-left text-sm min-w-[400px]">
+                        <tr class="opacity-50 text-xs border-b border-white/10"><th class="pb-3">Cihaz</th><th class="pb-3">Status</th><th class="pb-3">Enerji</th></tr>
+                        <tr><td class="py-3">SC-001 Mətbəx</td><td class="text-green-500">● Aktiv</td><td>98%</td></tr>
+                        <tr><td class="py-3">SC-002 Hamam</td><td class="text-green-500">● Aktiv</td><td>85%</td></tr>
+                    </table>
                 </div>
             </section>
 
             <section id="reports" class="section-content">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 glass-card p-8">
-                        <h3 class="text-xl font-bold mb-6 italic text-blue-500">Aylıq İstehlak Trendi</h3>
-                        <canvas id="monthlyChart" height="250"></canvas>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-card p-4 md:p-8">
+                        <h3 class="text-lg font-bold mb-6">Aylıq Trend</h3>
+                        <canvas id="monthlyChart"></canvas>
                     </div>
-                    <div class="space-y-6">
-                        <div class="glass-card p-6 border-l-4 border-yellow-500">
-                            <h5 class="font-bold text-yellow-500 flex items-center gap-2">
-                                <i class="fas fa-lightbulb"></i> AI Tövsiyəsi
-                            </h5>
-                            <p class="text-sm mt-2 opacity-80 italic">"Gecə saat 03:00-da mikrosızma aşkarlandı. Valfı yoxlamağınız tövsiyə olunur."</p>
-                        </div>
-                        <div class="glass-card p-6 border-l-4 border-green-500">
-                            <h5 class="font-bold text-green-500 flex items-center gap-2">
-                                <i class="fas fa-leaf"></i> Qənaət Hesabatı
-                            </h5>
-                            <p class="text-sm mt-2 opacity-80">Bu ay keçən aya nisbətən 12% daha az su işlətmisiniz. Təbriklər!</p>
-                        </div>
-                        <button class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-600/30">
-                            <i class="fas fa-file-pdf mr-2"></i> PDF Hesabatı Yüklə
-                        </button>
+                    <div class="glass-card p-6 bg-blue-600/10 border-l-4 border-blue-500">
+                        <h5 class="font-bold flex items-center gap-2"><i class="fas fa-info-circle"></i> Məlumat</h5>
+                        <p class="text-sm mt-2 opacity-80 italic">Cihazlar stabil işləyir. Qənaət rejimini aktivləşdirə bilərsiniz.</p>
                     </div>
                 </div>
             </section>
-
-            <section id="settings" class="section-content">
-                <div class="max-w-2xl glass-card p-8">
-                    <h3 class="text-xl font-bold mb-8">Sistem Tənzimləmələri</h3>
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between p-4 bg-slate-500/5 rounded-2xl">
-                            <div><p class="font-semibold">Telegram Bildirişləri</p><p class="text-xs opacity-50">Sızma olanda mesaj göndər</p></div>
-                            <div class="w-12 h-6 bg-blue-600 rounded-full relative"><div class="w-4 h-4 bg-white rounded-full absolute right-1 top-1"></div></div>
-                        </div>
-                        <div class="flex items-center justify-between p-4 bg-slate-500/5 rounded-2xl">
-                            <div><p class="font-semibold">Avtomatik Bloklama</p><p class="text-xs opacity-50">Təhlükə anında suyu kəs</p></div>
-                            <div class="w-12 h-6 bg-slate-700 rounded-full relative"><div class="w-4 h-4 bg-white/20 rounded-full absolute left-1 top-1"></div></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
         </div>
     </main>
 
     <script>
-        let manualMode = null;
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('hidden');
+        }
 
-        // SECTION SWITCHER
+
         function showSection(sectionId, element) {
-            const titles = { dashboard: "Dashboard", analytics: "Sensor Monitorinqi", reports: "Analitik Hesabatlar", settings: "Sistem Ayarları" };
-            document.getElementById("section-title").innerText = titles[sectionId];
+            document.getElementById("section-title").innerText = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
             document.querySelectorAll(".section-content").forEach((s) => s.classList.remove("active"));
             document.getElementById(sectionId).classList.add("active");
             document.querySelectorAll(".sidebar-item").forEach((i) => i.classList.remove("sidebar-active"));
             element.classList.add("sidebar-active");
+            if (window.innerWidth < 1024) toggleMenu(); 
         }
 
-        // CHARTS
-        const commonOptions = { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(100,116,139,0.1)' } }, x: { grid: { display: false } } } };
-
+        const chartConfig = { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(100,116,139,0.1)' } }, x: { grid: { display: false } } } };
         new Chart(document.getElementById("flowChart"), {
             type: "line",
-            data: { labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"], datasets: [{ data: [2, 1, 15, 8, 12, 5], borderColor: "#3b82f6", tension: 0.4, fill: true, backgroundColor: "rgba(59, 130, 246, 0.1)" }] },
-            options: commonOptions
+            data: { labels: ["00:00", "08:00", "16:00", "20:00"], datasets: [{ data: [2, 15, 12, 5], borderColor: "#3b82f6", tension: 0.4, fill: true, backgroundColor: "rgba(59, 130, 246, 0.1)" }] },
+            options: chartConfig
         });
-
         new Chart(document.getElementById("monthlyChart"), {
             type: "bar",
-            data: { labels: ["Həftə 1", "Həftə 2", "Həftə 3", "Həftə 4"], datasets: [{ label: "Litr", data: [420, 380, 500, 310], backgroundColor: "#3b82f6", borderRadius: 10 }] },
-            options: commonOptions
+            data: { labels: ["H1", "H2", "H3", "H4"], datasets: [{ data: [400, 350, 480, 300], backgroundColor: "#3b82f6", borderRadius: 8 }] },
+            options: chartConfig
         });
 
-        // ADAPTIVE THEME SYSTEM (Uhuu!)
-        function setMode(type) {
-            const modeText = document.getElementById('current-mode-text');
-            const modeIcon = document.getElementById('mode-icon');
-            const modeCard = document.getElementById('mode-card');
-            const modeIconBg = document.getElementById('mode-icon-bg');
-
+        function setTheme(type) {
+            const text = document.getElementById('current-mode-text');
+            const icon = document.getElementById('mode-icon');
             if (type === 'day') {
                 document.body.classList.add('light-mode');
-                modeText.innerText = "Gündüz Monitorinqi";
-                modeIcon.className = "fas fa-sun text-orange-500 text-xl";
-                modeCard.style.borderColor = "#f97316";
-                modeIconBg.className = "p-3 rounded-xl bg-orange-500/10";
+                text.innerText = "Gündüz";
+                icon.className = "fas fa-sun text-orange-500 text-xl";
             } else {
                 document.body.classList.remove('light-mode');
-                modeText.innerText = "Gecə Monitorinqi";
-                modeIcon.className = "fas fa-moon text-indigo-500 text-xl";
-                modeCard.style.borderColor = "#6366f1";
-                modeIconBg.className = "p-3 rounded-xl bg-indigo-500/10";
+                text.innerText = "Gecə";
+                icon.className = "fas fa-moon text-indigo-500 text-xl";
             }
         }
 
-        function autoUpdate() {
-            if (manualMode !== null) return;
-            const hour = new Date().getHours();
-            (hour >= 8 && hour < 20) ? setMode('day') : setMode('night');
-        }
-
-        document.getElementById('mode-card').addEventListener('click', function() {
-            if (document.body.classList.contains('light-mode')) {
-                manualMode = 'night';
-                setMode('night');
-            } else {
-                manualMode = 'day';
-                setMode('day');
-            }
+        document.getElementById('mode-card').addEventListener('click', () => {
+            document.body.classList.contains('light-mode') ? setTheme('night') : setTheme('day');
         });
 
-        autoUpdate();
-        setInterval(autoUpdate, 60000);
+        const hour = new Date().getHours();
+        (hour >= 8 && hour < 20) ? setTheme('day') : setTheme('night');
     </script>
 </body>
 </html>
